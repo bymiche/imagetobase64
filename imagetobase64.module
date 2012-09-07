@@ -19,9 +19,9 @@ function imagetobase64_menu() {
  * Implements hook_permission().
  */
 function imagetobase64_permission() {
- return array(
+  return array(
     'use imagetobase64' => array(
-      'title' => t('Use ImageToBase64 module'), 
+      'title' => t('Use ImageToBase64 module'),
       'description' => t('Use the calc page for converting images to base64.'),
     ),
   );
@@ -71,8 +71,8 @@ function imagetobase64_calc_form_submit($form, &$form_state) {
 
   //give it to the user
   if ($success) {
-    drupal_set_message('<strong>'.t('WOOHOO!  Copy the string below:').'</strong>');
-    drupal_set_message($success);
+    drupal_set_message('<strong>' . t('WOOHOO!  Copy the string below:') . '</strong>');
+    drupal_set_message(filter_xss($success));
   }
   else {
     drupal_set_message(t('I am sorry, but we could not convert your image.  Try again?'));
