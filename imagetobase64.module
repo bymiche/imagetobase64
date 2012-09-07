@@ -1,0 +1,84 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function imagetobase64_menu() {
+  $items['imagetobase64'] = array(
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('imagetobase64_calc_form'),
+    'title' => 'Convert your Image to Base64',
+    'description' => 'Upload an Image, Get Base64',
+    'access arguments' => array('use imagetobase64'),
+  );
+  return $items;
+}
+
+
+/**
+ * Implements hook_permission().
+ */
+function imagetobase64_permission() {
+ return array(
+    'use imagetobase64' => array(
+      'title' => t('Use ImageToBase64 module'), 
+      'description' => t('Use the calc page for converting images to base64.'),
+    ),
+  );
+}
+
+
+/**
+ * Custom form
+ */
+function imagetobase64_calc_form($form, &$form_state) {
+
+  $form = array();
+
+  $form['image'] = array(
+    '#title' => t('Choose an image'),
+    '#type' => 'managed_file',
+    '#description' => t('Select an image with any of the following extensions: png, jpg, jpeg, gif'),
+    '#default_value' => variable_get('imagetobase64_fid', ''),
+    '#upload_location' => 'public://imagetobase64/',
+    '#upload_validators' => array(
+      'file_validate_extensions' => array('gif png jpg jpeg'),
+      //'file_validate_size' => array(MAX_FILE_SIZE*1024*1024),
+    ),
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit for Processing'),
+  );
+
+  return $form;
+
+}
+
+
+/**
+ * Custom form submit
+ */
+function imagetobase64_calc_form_submit($form, &$form_state) {
+
+  //get the file that was just uploaded
+  $fid = $form_state['values']['image'];
+  $file = file_load($fid);
+
+  //get the binary, add it to form_state
+  $success = base64_encode(file_get_contents($file->uri));
+
+  //give it to the user
+  if ($success) {
+    drupal_set_message('<strong>'.t('WOOHOO!  Copy the string below:').'</strong>');
+    drupal_set_message($success);
+  }
+  else {
+    drupal_set_message(t('I am sorry, but we could not convert your image.  Try again?'));
+  }
+
+  //delete the file
+  file_delete($file, TRUE);
+
+}

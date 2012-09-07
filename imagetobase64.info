@@ -1,0 +1,5 @@
+name = Image To Base64
+description = "A 'calculator' that converts images to base64."
+core = 7.x
+
+dependencies[] = file
